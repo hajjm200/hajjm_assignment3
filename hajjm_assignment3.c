@@ -138,6 +138,30 @@ void executeCommand(char* args[], char* inputFile, char* outputFile, int backgro
     }
 }
 
+
+char* expandVariable(const char* input) {
+    char* result = malloc(2048); // MAX_LINE_LEN
+    result[0] = '\0';
+
+    pid_t shellPid = getpid();
+    char pidStr[20];
+    sprintf(pidStr, "%d", shellPid);
+
+    const char* curr = input;
+    while (*curr != '\0') {
+        if (*curr == '$' && *(curr + 1) == '$') {
+            strcat(result, pidStr);
+            curr += 2;
+        } else {
+            strncat(result, curr, 1);
+            curr++;
+        }
+    }
+
+    return result;
+}
+
+
 int main() {
     setupSignals();
     char* line = NULL;
